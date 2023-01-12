@@ -12,7 +12,7 @@ def summarize(text):
 
 def print_text(text, summary=True):
     if summary:
-        print("Summary:")
+        print("\nSummary:")
     else:
         print("Keywords:")
 

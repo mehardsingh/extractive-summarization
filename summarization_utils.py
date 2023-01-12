@@ -14,6 +14,14 @@ def remove_whitespace_sents(sentences):
 
     return without_whitespace
 
+def remove_whitespace(sentences):
+  without = []
+  for sent in sentences:
+    new_sent = sent.text.replace('\n', '')
+    new_sent = ' '.join(new_sent.split())
+    without.append(nlp(new_sent))
+  return without
+
 def create_graph_summarization(sentences):
   num_sentences = len(sentences)
 
@@ -48,6 +56,7 @@ def extract_sentences(text, p=0.2):
   doc = nlp(lower)
   sentences = sentence_split(doc)
   sentences = remove_whitespace_sents(sentences)
+  sentences = remove_whitespace(sentences)
 
   processed_to_original = {}
   processed_sentences = []
@@ -55,6 +64,10 @@ def extract_sentences(text, p=0.2):
     sent = sentences[i]
     tokens = filter_doc(sent)
     combined = ' '.join(tokens)
+
+    if len(combined) == 0:
+      continue
+
     sentence_doc = nlp(combined)
     processed_sentences.append(sentence_doc)
     processed_to_original[sentence_doc.text] = (sent.text, i)
@@ -68,8 +81,10 @@ def extract_sentences(text, p=0.2):
   for processed in ordered_imp:
     original.append(processed_to_original[processed[0]])
 
-  ordered_idx = sorted(original, key=lambda x:x[1], reverse=False)
-  sentence_extraction = [p[0] for p in ordered_idx]
   summary_len = int(p * len(sentences))
-  limit = sentence_extraction[:summary_len]
-  return limit
+  limit = original[:summary_len]
+
+  ordered_idx = sorted(limit, key=lambda x:x[1], reverse=False)
+  sentence_extraction = [p[0] for p in ordered_idx]
+  
+  return sentence_extraction

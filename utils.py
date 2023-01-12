@@ -1,7 +1,7 @@
 from constants import POS_TAGS, MAX_ITERS, CONVERGENCE
 import spacy
 
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_md")
 
 class Vertex:
   def __init__(self, text_unit):
@@ -33,25 +33,36 @@ def filter_doc(doc):
 
   return filtered
 
+def get_neighbors_sum(V):
+  neighbors_sum = {}
+  for textunit in V:
+    vertex = V[textunit]
+    neighbors_sum[vertex] = sum(e.weight for e in vertex.out_edges)
+  return neighbors_sum
+
 def textrank(V, W, d=0.85):
-    iteration_quantity = 0
-    for iteration_number in range(MAX_ITERS):
-        iteration_quantity += 1
-        convergence_achieved = 0
-        for lemma in V:
-            V_i = V[lemma]
-            rank = 1 - d
-            for e1 in V_i.in_edges:
-                V_j = e1.text_unit
-                neighbors_sum = sum(e2.weight for e2 in V_j.out_edges)
-                rank += d * e1.weight / neighbors_sum * W[V_j.text_unit]
+  neighbors_sum_dict = get_neighbors_sum(V)
 
-            if abs(W[lemma] - rank) <= CONVERGENCE:
-                convergence_achieved += 1
+  iteration_quantity = 0
+  for i in range(MAX_ITERS):
+      iteration_quantity += 1
+      convergence_achieved = 0
+      for lemma in V:
+          V_i = V[lemma]
+          rank = 1 - d
+          for e1 in V_i.in_edges:
+              V_j = e1.text_unit
+              neighbors_sum = neighbors_sum_dict[V_j]
+              if neighbors_sum == 0:
+                continue
+              rank += d * e1.weight / neighbors_sum * W[V_j.text_unit]
 
-            W[lemma] = rank
+          if abs(W[lemma] - rank) <= CONVERGENCE:
+              convergence_achieved += 1
 
-        if convergence_achieved == len(V):
-            break
+          W[lemma] = rank
 
-    return W
+      if convergence_achieved == len(V):
+          break
+
+  return W
