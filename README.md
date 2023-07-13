@@ -2,6 +2,8 @@
 
 This project is a **TextRank** implementation of [Samizadah (2022)](https://arxiv.org/pdf/2212.09701.pdf). It also takes some code and inspiration from [here](https://github.com/summanlp/textrank/blob/master/summa/keywords.py).
 
+Read the full report at `report.pdf`
+
 ## **How to Use**
 
 ### _Dependencies_

@@ -5,7 +5,7 @@ import sys
 def summarize(text):
     print("TEXT", text)
 
-    sentence_extraction = extract_sentences(text, p=0.5)
+    sentence_extraction = extract_sentences(text, p=0.2)
     combined = " ".join(sentence_extraction)
     keyword_extraction = extract_keywords(combined)
 

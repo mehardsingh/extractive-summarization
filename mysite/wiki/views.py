@@ -7,7 +7,6 @@ import json
 from django.contrib.auth.models import User #####
 from django.http import JsonResponse , HttpResponse ####
 
-import wikipedia
 from wiki.summarize import summarize as sm
 
 def index(request):
